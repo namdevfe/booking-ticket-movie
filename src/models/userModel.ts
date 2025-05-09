@@ -11,7 +11,9 @@ const userSchema = new mongoose.Schema(
     dateOfBirth: { type: Date, required: true },
     gender: { type: String, enum: Gender, required: true },
     avatar: { type: String },
-    isVerifiedEmail: { type: Boolean, default: false }
+    isVerifiedEmail: { type: Boolean, default: false },
+    verifyToken: { type: String },
+    verifyExpires: { type: Number }
   },
   {
     timestamps: true

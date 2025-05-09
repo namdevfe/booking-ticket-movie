@@ -2,6 +2,8 @@ import { StatusCodes } from 'http-status-codes'
 import User from '~/models/userModel'
 import { RegisterPayloadType } from '~/types/userType'
 import ApiError from '~/utils/ApiError'
+import sendMail from '~/utils/sendMail'
+import crypto from 'crypto'
 
 const register = async (payload: RegisterPayloadType): Promise<any> => {
   const { email } = payload
@@ -17,10 +19,31 @@ const register = async (payload: RegisterPayloadType): Promise<any> => {
     await newUser.save()
 
     if (newUser._id) {
-      return {
-        statusCode: StatusCodes.CREATED,
-        message: 'Account registered successfully! Welcome to QNCinema.'
-      }
+      // Generate verifyToken - verifyExpires
+      const verifyToken = crypto.randomBytes(16).toString('hex')
+      const verifyExpires = Date.now() + 5 * 60 * 1000
+
+      newUser.verifyToken = verifyToken
+      newUser.verifyExpires = verifyExpires
+      await newUser.save()
+
+      // Send email request user verify email
+      const sentEmail = await sendMail({
+        email: newUser.email,
+        subject: 'Email verification',
+        content: `<div>
+          Please click to link bellow:
+          <a href='http://localhost:8017/api/v1/auth/verify-email?email=${newUser.email}&&verifyToken=${verifyToken}'>
+            Verify Email
+          </a>
+        </div>`
+      })
+
+      if (sentEmail?.statusCode === StatusCodes.OK)
+        return {
+          statusCode: StatusCodes.OK,
+          message: 'Please check your email to verify account!'
+        }
     }
   } catch (error) {
     throw error
