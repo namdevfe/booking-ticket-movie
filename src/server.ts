@@ -1,8 +1,8 @@
 import express from 'express'
 import 'dotenv/config'
-import APIs_V1 from './routes/v1'
 import errorHandlingMiddleware from '~/middlewares/errorHandlingMiddleware'
 import connectMongoDB from '~/config/mongodb'
+import { APIs_V1 } from '~/routes/v1'
 
 const APP_HOSTNAME = 'localhost'
 const APP_PORT = 8017
@@ -13,7 +13,7 @@ app.use(express.json())
 
 connectMongoDB()
 
-APIs_V1(app)
+app.use('/api/v1', APIs_V1)
 
 app.use(errorHandlingMiddleware)
 

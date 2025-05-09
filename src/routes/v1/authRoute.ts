@@ -6,4 +6,4 @@ const Router = express.Router()
 
 Router.post('/register', authValidation.register, authController.register)
 
-export const userRoutes = Router
+export const authRoutes = Router

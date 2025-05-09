@@ -12,6 +12,11 @@ export interface IUser {
   gender: Gender
   avatar?: string
   isVerifiedEmail?: boolean
+  verifyToken?: string
+  verifyExpires?: number
 }
 
-export type RegisterPayloadType = Omit<IUser, 'isVerifiedEmail'>
+export type RegisterPayloadType = Omit<
+  IUser,
+  'isVerifiedEmail' | 'verifyToken' | 'verifyExpires'
+>

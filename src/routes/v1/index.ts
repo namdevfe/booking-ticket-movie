@@ -1,8 +1,14 @@
 import { Application } from 'express'
-import { userRoutes } from './userRoute'
+import { authRoutes } from './authRoute'
 
-const APIs_V1 = (app: Application) => {
-  app.use('/auth', userRoutes)
-}
+import express from 'express'
 
-export default APIs_V1
+// const APIs_V1 = (app: Application) => {
+//   app.use('/auth', userRoutes)
+// }
+
+const Router = express.Router()
+
+Router.use('/auth', authRoutes)
+
+export const APIs_V1 = Router
