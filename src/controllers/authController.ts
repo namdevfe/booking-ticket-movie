@@ -10,8 +10,18 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await authService.verifyEmail(req.query)
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const authController = {
-  register
+  register,
+  verifyEmail
 }
 
 export default authController

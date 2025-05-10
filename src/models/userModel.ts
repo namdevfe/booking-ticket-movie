@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
-import { Gender, IUser } from '~/types/userType'
+import { Gender, IUser, Role } from '~/types/userType'
 
 const userSchema = new mongoose.Schema(
   {
@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema(
     avatar: { type: String },
     isVerifiedEmail: { type: Boolean, default: false },
     verifyToken: { type: String },
-    verifyExpires: { type: Number }
+    verifyExpires: { type: Number },
+    role: { type: String, enum: Role, required: true, default: Role.USER }
   },
   {
     timestamps: true

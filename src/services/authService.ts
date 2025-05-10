@@ -1,9 +1,9 @@
 import { StatusCodes } from 'http-status-codes'
 import User from '~/models/userModel'
-import { RegisterPayloadType } from '~/types/userType'
 import ApiError from '~/utils/ApiError'
 import sendMail from '~/utils/sendMail'
 import crypto from 'crypto'
+import { RegisterPayloadType, VerifyEmailPayloadType } from '~/types/authType'
 
 const register = async (payload: RegisterPayloadType): Promise<any> => {
   const { email } = payload
@@ -33,7 +33,7 @@ const register = async (payload: RegisterPayloadType): Promise<any> => {
         subject: 'Email verification',
         content: `<div>
           Please click to link bellow:
-          <a href='http://localhost:8017/api/v1/auth/verify-email?email=${newUser.email}&&verifyToken=${verifyToken}'>
+          <a href='http://localhost:8017/api/v1/auth/verify-email?verifyToken=${verifyToken}'>
             Verify Email
           </a>
         </div>`
@@ -50,8 +50,38 @@ const register = async (payload: RegisterPayloadType): Promise<any> => {
   }
 }
 
+const verifyEmail = async (payload: VerifyEmailPayloadType): Promise<any> => {
+  const { verifyToken } = payload
+
+  try {
+    const user = await User.findOne({ verifyToken })
+
+    if (!user) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid token!')
+    }
+
+    // Check expires time of token
+    if (Number(user.verifyExpires) <= Date.now()) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Token is expired!')
+    }
+
+    user.isVerifiedEmail = true
+    user.verifyExpires = undefined
+    user.verifyToken = undefined
+    await user.save()
+
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Your account is actived.'
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const authService = {
-  register
+  register,
+  verifyEmail
 }
 
 export default authService

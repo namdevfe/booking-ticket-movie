@@ -3,6 +3,11 @@ export enum Gender {
   FEMALE = 'female'
 }
 
+export enum Role {
+  ADMIN,
+  USER
+}
+
 export interface IUser {
   email: string
   password: string
@@ -14,9 +19,5 @@ export interface IUser {
   isVerifiedEmail?: boolean
   verifyToken?: string
   verifyExpires?: number
+  role: Role
 }
-
-export type RegisterPayloadType = Omit<
-  IUser,
-  'isVerifiedEmail' | 'verifyToken' | 'verifyExpires'
->

@@ -1,5 +1,6 @@
 import Joi from 'joi'
-import { Gender, RegisterPayloadType } from '~/types/userType'
+import { RegisterPayloadType, VerifyEmailPayloadType } from '~/types/authType'
+import { Gender } from '~/types/userType'
 
 export const registerSchema = Joi.object<RegisterPayloadType>({
   email: Joi.string()
@@ -15,4 +16,8 @@ export const registerSchema = Joi.object<RegisterPayloadType>({
     .required(),
   avatar: Joi.string().optional(),
   dateOfBirth: Joi.date().required()
+})
+
+export const verifyEmailSchema = Joi.object<VerifyEmailPayloadType>({
+  verifyToken: Joi.string().required().trim().strict()
 })
