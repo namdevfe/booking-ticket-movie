@@ -19,9 +19,19 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const login = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await authService.login(req.body)
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const authController = {
   register,
-  verifyEmail
+  verifyEmail,
+  login
 }
 
 export default authController

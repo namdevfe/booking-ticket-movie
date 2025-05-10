@@ -2,9 +2,17 @@ import crypto from 'crypto'
 import { StatusCodes } from 'http-status-codes'
 import { env } from '~/config/environment'
 import User from '~/models/userModel'
-import { RegisterPayloadType, VerifyEmailPayloadType } from '~/types/authType'
+import {
+  LoginPayloadType,
+  RegisterPayloadType,
+  VerifyEmailPayloadType
+} from '~/types/authType'
+import { IApiResponse } from '~/types/commonType'
 import ApiError from '~/utils/ApiError'
 import sendMail from '~/utils/sendMail'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import { generateAccessToken, generateRefreshToken } from '~/utils/jwt'
 
 const register = async (payload: RegisterPayloadType): Promise<any> => {
   const { email } = payload
@@ -80,9 +88,57 @@ const verifyEmail = async (payload: VerifyEmailPayloadType): Promise<any> => {
   }
 }
 
+const login = async (payload: LoginPayloadType): Promise<IApiResponse> => {
+  const { email, password } = payload
+
+  try {
+    // Check existing account
+    const existingUser = await User.findOne({ email })
+    if (!existingUser) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Account does not exist!')
+    }
+
+    // Check password
+    const isCorrectPassword = await bcrypt.compare(
+      password,
+      existingUser.password
+    )
+    if (!isCorrectPassword) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid credentials!')
+    }
+
+    // Check email has been verify
+    if (!existingUser.isVerifiedEmail) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        'Your account has been actived!'
+      )
+    }
+
+    // Generate token (accessToken, refreshToken)
+    const accessToken = generateAccessToken({ uid: existingUser._id })
+    const refreshToken = generateRefreshToken({ uid: existingUser._id })
+
+    existingUser.refreshToken = refreshToken
+    await existingUser.save()
+
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Login successfully.',
+      data: {
+        accessToken,
+        refreshToken
+      }
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const authService = {
   register,
-  verifyEmail
+  verifyEmail,
+  login
 }
 
 export default authService

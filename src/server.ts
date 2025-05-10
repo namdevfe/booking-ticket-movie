@@ -8,12 +8,11 @@ const app = express()
 
 app.use(express.json())
 
-connectMongoDB()
-
 app.use('/api/v1', APIs_V1)
 
 app.use(errorHandlingMiddleware)
 
-app.listen(env.APP_PORT, env.APP_HOST, () => {
+app.listen(env.APP_PORT, env.APP_HOST, async () => {
+  await connectMongoDB()
   console.log(`Server is running on http://${env.APP_HOST}:${env.APP_PORT}`)
 })

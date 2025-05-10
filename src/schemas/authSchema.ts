@@ -1,11 +1,15 @@
 import Joi from 'joi'
-import { RegisterPayloadType, VerifyEmailPayloadType } from '~/types/authType'
+import {
+  LoginPayloadType,
+  RegisterPayloadType,
+  VerifyEmailPayloadType
+} from '~/types/authType'
 import { Gender } from '~/types/userType'
 
 export const registerSchema = Joi.object<RegisterPayloadType>({
   email: Joi.string()
     .required()
-    .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+    .email({ minDomainSegments: 2, tlds: { allow: ['com'] } })
     .trim()
     .strict(),
   password: Joi.string().required().min(6).trim().strict(),
@@ -20,4 +24,13 @@ export const registerSchema = Joi.object<RegisterPayloadType>({
 
 export const verifyEmailSchema = Joi.object<VerifyEmailPayloadType>({
   verifyToken: Joi.string().required().trim().strict()
+})
+
+export const loginSchema = Joi.object<LoginPayloadType>({
+  email: Joi.string()
+    .required()
+    .email({ minDomainSegments: 2, tlds: { allow: ['com'] } })
+    .trim()
+    .strict(),
+  password: Joi.string().required().min(6).trim().strict()
 })

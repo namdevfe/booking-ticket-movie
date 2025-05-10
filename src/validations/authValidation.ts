@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import Joi from 'joi'
-import { registerSchema, verifyEmailSchema } from '~/schemas/authSchema'
+import {
+  loginSchema,
+  registerSchema,
+  verifyEmailSchema
+} from '~/schemas/authSchema'
 import ApiError from '~/utils/ApiError'
 
 const register = async (req: Request, _: Response, next: NextFunction) => {
@@ -44,9 +48,29 @@ const verifyEmail = async (req: Request, _: Response, next: NextFunction) => {
   }
 }
 
+const login = async (req: Request, _: Response, next: NextFunction) => {
+  try {
+    await loginSchema.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error) {
+    if (error instanceof Joi.ValidationError) {
+      next(
+        new ApiError(
+          StatusCodes.UNPROCESSABLE_ENTITY,
+          'Validation Error',
+          error?.details
+        )
+      )
+    }
+
+    next(error)
+  }
+}
+
 const authValidation = {
   register,
-  verifyEmail
+  verifyEmail,
+  login
 }
 
 export default authValidation

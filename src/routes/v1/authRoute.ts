@@ -10,5 +10,6 @@ Router.get(
   authValidation.verifyEmail,
   authController.verifyEmail
 )
+Router.post('/login', authValidation.login, authController.login)
 
 export const authRoutes = Router
