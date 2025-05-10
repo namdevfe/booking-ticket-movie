@@ -14,7 +14,8 @@ const userSchema = new mongoose.Schema(
     isVerifiedEmail: { type: Boolean, default: false },
     verifyToken: { type: String },
     verifyExpires: { type: Number },
-    role: { type: String, enum: Role, required: true, default: Role.USER }
+    role: { type: String, enum: Role, required: true, default: Role.USER },
+    refreshToken: { type: String }
   },
   {
     timestamps: true
@@ -22,7 +23,7 @@ const userSchema = new mongoose.Schema(
 )
 
 userSchema.pre('save', async function (next) {
-  if (!this.isModified()) return next()
+  if (!this.isModified('password')) return next()
 
   try {
     this.password = await bcrypt.hash(this.password, 8)
