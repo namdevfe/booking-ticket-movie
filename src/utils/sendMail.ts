@@ -1,6 +1,7 @@
 import { OAuth2Client } from 'google-auth-library'
 import { StatusCodes } from 'http-status-codes'
 import nodemailer, { TransportOptions } from 'nodemailer'
+import { env } from '~/config/environment'
 
 interface IMailOptions {
   email: string
@@ -14,13 +15,13 @@ const sendMail = async ({ email, subject, content }: IMailOptions) => {
   try {
     /** Init OAuth2Client with ClientID - ClientSecret */
     const myOAuth2Client = new OAuth2Client(
-      process.env.GOOGLE_MAILER_CLIENT_ID as string,
-      process.env.GOOGLE_MAILER_CLIENT_SECRET as string
+      env.GOOGLE_MAILER_CLIENT_ID as string,
+      env.GOOGLE_MAILER_CLIENT_SECRET as string
     )
 
     /** Set refreshToken to OAuth2Client */
     myOAuth2Client.setCredentials({
-      refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN as string
+      refresh_token: env.GOOGLE_MAILER_REFRESH_TOKEN as string
     })
 
     /**
@@ -36,10 +37,10 @@ const sendMail = async ({ email, subject, content }: IMailOptions) => {
       service: 'gmail',
       auth: {
         type: 'OAuth2',
-        user: process.env.ADMIN_EMAIL_ADDRESS as string,
-        clientId: process.env.GOOGLE_MAILER_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_MAILER_CLIENT_SECRET,
-        refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
+        user: env.ADMIN_EMAIL_ADDRESS as string,
+        clientId: env.GOOGLE_MAILER_CLIENT_ID,
+        clientSecret: env.GOOGLE_MAILER_CLIENT_SECRET,
+        refresh_token: env.GOOGLE_MAILER_REFRESH_TOKEN,
         accessToken
       }
     } as TransportOptions)
