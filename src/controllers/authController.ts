@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import authService from '~/services/authService'
+import { AuthRequestType } from '~/types/authType'
 
 const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -28,10 +29,28 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const getProfile = async (
+  req: AuthRequestType,
+  res: Response,
+  next: NextFunction
+) => {
+  const uid = req.user?.uid
+
+  try {
+    if (uid) {
+      const response = await authService.getProfile(uid)
+      res.status(response.statusCode).json(response)
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
 const authController = {
   register,
   verifyEmail,
-  login
+  login,
+  getProfile
 }
 
 export default authController
