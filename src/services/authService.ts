@@ -135,10 +135,30 @@ const login = async (payload: LoginPayloadType): Promise<IApiResponse> => {
   }
 }
 
+const getProfile = async (uid: string): Promise<IApiResponse> => {
+  try {
+    const excludeFields = '-password -verifyToken -verifyExpires -refreshToken'
+    const user = await User.findById(uid).select(excludeFields)
+
+    if (!user) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'User does not found!')
+    }
+
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Get profile successfully.',
+      data: user
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const authService = {
   register,
   verifyEmail,
-  login
+  login,
+  getProfile
 }
 
 export default authService
