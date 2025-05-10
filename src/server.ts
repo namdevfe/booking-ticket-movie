@@ -1,11 +1,8 @@
 import express from 'express'
-import 'dotenv/config'
-import errorHandlingMiddleware from '~/middlewares/errorHandlingMiddleware'
+import { env } from '~/config/environment'
 import connectMongoDB from '~/config/mongodb'
+import errorHandlingMiddleware from '~/middlewares/errorHandlingMiddleware'
 import { APIs_V1 } from '~/routes/v1'
-
-const APP_HOSTNAME = 'localhost'
-const APP_PORT = 8017
 
 const app = express()
 
@@ -17,6 +14,6 @@ app.use('/api/v1', APIs_V1)
 
 app.use(errorHandlingMiddleware)
 
-app.listen(APP_PORT, () => {
-  console.log(`Server is running on http://${APP_HOSTNAME}:${APP_PORT}`)
+app.listen(env.APP_PORT, env.APP_HOST, () => {
+  console.log(`Server is running on http://${env.APP_HOST}:${env.APP_PORT}`)
 })

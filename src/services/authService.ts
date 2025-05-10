@@ -1,9 +1,10 @@
+import crypto from 'crypto'
 import { StatusCodes } from 'http-status-codes'
+import { env } from '~/config/environment'
 import User from '~/models/userModel'
+import { RegisterPayloadType, VerifyEmailPayloadType } from '~/types/authType'
 import ApiError from '~/utils/ApiError'
 import sendMail from '~/utils/sendMail'
-import crypto from 'crypto'
-import { RegisterPayloadType, VerifyEmailPayloadType } from '~/types/authType'
 
 const register = async (payload: RegisterPayloadType): Promise<any> => {
   const { email } = payload
@@ -33,7 +34,7 @@ const register = async (payload: RegisterPayloadType): Promise<any> => {
         subject: 'Email verification',
         content: `<div>
           Please click to link bellow:
-          <a href='http://localhost:8017/api/v1/auth/verify-email?verifyToken=${verifyToken}'>
+          <a href='http://${env.APP_HOST}:${env.APP_PORT}/api/v1/auth/verify-email?verifyToken=${verifyToken}'>
             Verify Email
           </a>
         </div>`
