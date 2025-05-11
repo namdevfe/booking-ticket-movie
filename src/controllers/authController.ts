@@ -46,11 +46,25 @@ const getProfile = async (
   }
 }
 
+const refreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const response = await authService.refreshToken(req.body)
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const authController = {
   register,
   verifyEmail,
   login,
-  getProfile
+  getProfile,
+  refreshToken
 }
 
 export default authController

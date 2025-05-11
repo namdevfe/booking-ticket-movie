@@ -1,6 +1,7 @@
 import Joi from 'joi'
 import {
   LoginPayloadType,
+  RefreshTokenPayloadType,
   RegisterPayloadType,
   VerifyEmailPayloadType
 } from '~/types/authType'
@@ -33,4 +34,8 @@ export const loginSchema = Joi.object<LoginPayloadType>({
     .trim()
     .strict(),
   password: Joi.string().required().min(6).trim().strict()
+})
+
+export const refreshTokenSchema = Joi.object<RefreshTokenPayloadType>({
+  refreshToken: Joi.string().required().trim().strict()
 })
