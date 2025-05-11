@@ -18,5 +18,6 @@ Router.post(
   authValidation.refreshToken,
   authController.refreshToken
 )
+Router.put('/logout', authValidation.logout, authController.logout)
 
 export const authRoutes = Router

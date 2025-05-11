@@ -1,4 +1,4 @@
-export interface IApiResponse<T = unknown> {
+export interface IApiResponse<T = any> {
   statusCode: number
   message: string
   data?: T

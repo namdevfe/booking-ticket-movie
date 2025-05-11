@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import Joi from 'joi'
 import {
   loginSchema,
+  logoutSchema,
   refreshTokenSchema,
   registerSchema,
   verifyEmailSchema
@@ -87,11 +88,31 @@ const refreshToken = async (req: Request, _: Response, next: NextFunction) => {
   }
 }
 
+const logout = async (req: Request, _: Response, next: NextFunction) => {
+  try {
+    await logoutSchema.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error) {
+    if (error instanceof Joi.ValidationError) {
+      next(
+        new ApiError(
+          StatusCodes.UNPROCESSABLE_ENTITY,
+          'Validation Error',
+          error?.details
+        )
+      )
+    }
+
+    next(error)
+  }
+}
+
 const authValidation = {
   register,
   verifyEmail,
   login,
-  refreshToken
+  refreshToken,
+  logout
 }
 
 export default authValidation
