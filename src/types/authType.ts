@@ -15,3 +15,5 @@ export type AuthRequestType = Request & {
 }
 
 export type RefreshTokenPayloadType = Pick<IUser, 'refreshToken'>
+
+export type LogoutPayloadType = Pick<IUser, 'refreshToken'>

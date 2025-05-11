@@ -59,12 +59,22 @@ const refreshToken = async (
   }
 }
 
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await authService.logout(req.body)
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const authController = {
   register,
   verifyEmail,
   login,
   getProfile,
-  refreshToken
+  refreshToken,
+  logout
 }
 
 export default authController

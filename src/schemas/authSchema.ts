@@ -1,6 +1,7 @@
 import Joi from 'joi'
 import {
   LoginPayloadType,
+  LogoutPayloadType,
   RefreshTokenPayloadType,
   RegisterPayloadType,
   VerifyEmailPayloadType
@@ -37,5 +38,9 @@ export const loginSchema = Joi.object<LoginPayloadType>({
 })
 
 export const refreshTokenSchema = Joi.object<RefreshTokenPayloadType>({
+  refreshToken: Joi.string().required().trim().strict()
+})
+
+export const logoutSchema = Joi.object<LogoutPayloadType>({
   refreshToken: Joi.string().required().trim().strict()
 })

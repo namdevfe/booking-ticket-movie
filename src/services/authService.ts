@@ -4,6 +4,7 @@ import { env } from '~/config/environment'
 import User from '~/models/userModel'
 import {
   LoginPayloadType,
+  LogoutPayloadType,
   RefreshTokenPayloadType,
   RegisterPayloadType,
   VerifyEmailPayloadType
@@ -194,12 +195,36 @@ const refreshToken = async (
   }
 }
 
+const logout = async (payload: LogoutPayloadType): Promise<IApiResponse> => {
+  const { refreshToken } = payload
+
+  try {
+    const user = await User.findOne({ refreshToken })
+
+    if (!user) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid token!')
+    }
+
+    // Remove refreshToken on databse
+    user.refreshToken = undefined
+    await user.save()
+
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Logout successfully.'
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const authService = {
   register,
   verifyEmail,
   login,
   getProfile,
-  refreshToken
+  refreshToken,
+  logout
 }
 
 export default authService
