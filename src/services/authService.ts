@@ -4,6 +4,7 @@ import { env } from '~/config/environment'
 import User from '~/models/userModel'
 import {
   LoginPayloadType,
+  RefreshTokenPayloadType,
   RegisterPayloadType,
   VerifyEmailPayloadType
 } from '~/types/authType'
@@ -154,11 +155,51 @@ const getProfile = async (uid: string): Promise<IApiResponse> => {
   }
 }
 
+const refreshToken = async (
+  payload: RefreshTokenPayloadType
+): Promise<IApiResponse> => {
+  const { refreshToken } = payload
+
+  try {
+    const user = await User.findOne({ refreshToken })
+
+    if (!user) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid token!')
+    }
+
+    // Check token
+    jwt.verify(refreshToken as string, env.JWT_REFRESH_TOKEN_SECRET_KEY)
+
+    // Generate new accessToken
+    const newAccessToken = generateAccessToken({ uid: user._id })
+
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Create new token successfully.',
+      data: {
+        accessToken: newAccessToken,
+        refreshToken
+      }
+    }
+  } catch (error) {
+    if (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new ApiError(StatusCodes.UNAUTHORIZED, 'Token expired!')
+      } else {
+        throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid token!')
+      }
+    }
+
+    throw error
+  }
+}
+
 const authService = {
   register,
   verifyEmail,
   login,
-  getProfile
+  getProfile,
+  refreshToken
 }
 
 export default authService

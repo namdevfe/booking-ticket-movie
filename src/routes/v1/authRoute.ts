@@ -13,5 +13,10 @@ Router.get(
 )
 Router.post('/login', authValidation.login, authController.login)
 Router.get('/profile', authMiddleware, authController.getProfile)
+Router.post(
+  '/refresh-token',
+  authValidation.refreshToken,
+  authController.refreshToken
+)
 
 export const authRoutes = Router

@@ -13,3 +13,5 @@ export type LoginPayloadType = Pick<IUser, 'email' | 'password'>
 export type AuthRequestType = Request & {
   user?: any
 }
+
+export type RefreshTokenPayloadType = Pick<IUser, 'refreshToken'>

@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import Joi from 'joi'
 import {
   loginSchema,
+  refreshTokenSchema,
   registerSchema,
   verifyEmailSchema
 } from '~/schemas/authSchema'
@@ -67,10 +68,30 @@ const login = async (req: Request, _: Response, next: NextFunction) => {
   }
 }
 
+const refreshToken = async (req: Request, _: Response, next: NextFunction) => {
+  try {
+    await refreshTokenSchema.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error) {
+    if (error instanceof Joi.ValidationError) {
+      next(
+        new ApiError(
+          StatusCodes.UNPROCESSABLE_ENTITY,
+          'Validation Error',
+          error?.details
+        )
+      )
+    }
+
+    next(error)
+  }
+}
+
 const authValidation = {
   register,
   verifyEmail,
-  login
+  login,
+  refreshToken
 }
 
 export default authValidation
