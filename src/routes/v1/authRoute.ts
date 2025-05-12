@@ -1,6 +1,7 @@
 import express from 'express'
 import authController from '~/controllers/authController'
 import authMiddleware from '~/middlewares/authMiddleware'
+import { Role } from '~/types/userType'
 import authValidation from '~/validations/authValidation'
 
 const Router = express.Router()
@@ -12,7 +13,7 @@ Router.get(
   authController.verifyEmail
 )
 Router.post('/login', authValidation.login, authController.login)
-Router.get('/profile', authMiddleware, authController.getProfile)
+Router.get('/profile', authMiddleware(), authController.getProfile)
 Router.post(
   '/refresh-token',
   authValidation.refreshToken,
