@@ -3,7 +3,13 @@ import { IUser } from '~/types/userType'
 
 export type RegisterPayloadType = Omit<
   IUser,
-  'isVerifiedEmail' | 'verifyToken' | 'verifyExpires' | 'role' | 'refreshToken'
+  | 'isVerifiedEmail'
+  | 'verifyToken'
+  | 'verifyExpires'
+  | 'role'
+  | 'refreshToken'
+  | 'resetPasswordToken'
+  | 'resetPasswordExpires'
 >
 
 export type VerifyEmailPayloadType = Pick<IUser, 'verifyToken'>
@@ -17,3 +23,10 @@ export type AuthRequestType = Request & {
 export type RefreshTokenPayloadType = Pick<IUser, 'refreshToken'>
 
 export type LogoutPayloadType = Pick<IUser, 'refreshToken'>
+
+export type ForgotPasswordPayloadType = Pick<IUser, 'email'>
+
+export type ResetPasswordPayloadType = Pick<
+  IUser,
+  'resetPasswordToken' | 'password'
+>

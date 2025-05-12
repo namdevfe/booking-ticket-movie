@@ -1,9 +1,11 @@
 import Joi from 'joi'
 import {
+  ForgotPasswordPayloadType,
   LoginPayloadType,
   LogoutPayloadType,
   RefreshTokenPayloadType,
   RegisterPayloadType,
+  ResetPasswordPayloadType,
   VerifyEmailPayloadType
 } from '~/types/authType'
 import { Gender } from '~/types/userType'
@@ -43,4 +45,17 @@ export const refreshTokenSchema = Joi.object<RefreshTokenPayloadType>({
 
 export const logoutSchema = Joi.object<LogoutPayloadType>({
   refreshToken: Joi.string().required().trim().strict()
+})
+
+export const forgotPasswordSchema = Joi.object<ForgotPasswordPayloadType>({
+  email: Joi.string()
+    .required()
+    .email({ minDomainSegments: 2, tlds: { allow: ['com'] } })
+    .trim()
+    .strict()
+})
+
+export const resetPasswordSchema = Joi.object<ResetPasswordPayloadType>({
+  resetPasswordToken: Joi.string().required().trim().strict(),
+  password: Joi.string().required().min(6).trim().strict()
 })

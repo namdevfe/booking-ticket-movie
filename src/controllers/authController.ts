@@ -68,13 +68,41 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const forgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const response = await authService.forgotPassword(req.body)
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const response = await authService.resetPassword(req.body)
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const authController = {
   register,
   verifyEmail,
   login,
   getProfile,
   refreshToken,
-  logout
+  logout,
+  forgotPassword,
+  resetPassword
 }
 
 export default authController

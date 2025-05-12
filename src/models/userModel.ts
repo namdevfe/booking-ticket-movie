@@ -15,7 +15,9 @@ const userSchema = new mongoose.Schema(
     verifyToken: { type: String },
     verifyExpires: { type: Number },
     role: { type: String, enum: Role, required: true, default: Role.USER },
-    refreshToken: { type: String }
+    refreshToken: { type: String },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Number }
   },
   {
     timestamps: true

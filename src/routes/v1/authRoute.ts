@@ -19,5 +19,15 @@ Router.post(
   authController.refreshToken
 )
 Router.put('/logout', authValidation.logout, authController.logout)
+Router.post(
+  '/forgot-password',
+  authValidation.forgotPassword,
+  authController.forgotPassword
+)
+Router.put(
+  '/reset-password',
+  authValidation.resetPassword,
+  authController.resetPassword
+)
 
 export const authRoutes = Router
