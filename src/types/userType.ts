@@ -21,4 +21,6 @@ export interface IUser {
   verifyExpires?: number
   role: Role
   refreshToken?: string
+  resetPasswordToken?: string
+  resetPasswordExpires?: number
 }

@@ -2,10 +2,12 @@ import { NextFunction, Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import Joi from 'joi'
 import {
+  forgotPasswordSchema,
   loginSchema,
   logoutSchema,
   refreshTokenSchema,
   registerSchema,
+  resetPasswordSchema,
   verifyEmailSchema
 } from '~/schemas/authSchema'
 import ApiError from '~/utils/ApiError'
@@ -107,12 +109,56 @@ const logout = async (req: Request, _: Response, next: NextFunction) => {
   }
 }
 
+const forgotPassword = async (
+  req: Request,
+  _: Response,
+  next: NextFunction
+) => {
+  try {
+    await forgotPasswordSchema.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error) {
+    if (error instanceof Joi.ValidationError) {
+      next(
+        new ApiError(
+          StatusCodes.UNPROCESSABLE_ENTITY,
+          'Validation Error',
+          error?.details
+        )
+      )
+    }
+
+    next(error)
+  }
+}
+
+const resetPassword = async (req: Request, _: Response, next: NextFunction) => {
+  try {
+    await resetPasswordSchema.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error) {
+    if (error instanceof Joi.ValidationError) {
+      next(
+        new ApiError(
+          StatusCodes.UNPROCESSABLE_ENTITY,
+          'Validation Error',
+          error?.details
+        )
+      )
+    }
+
+    next(error)
+  }
+}
+
 const authValidation = {
   register,
   verifyEmail,
   login,
   refreshToken,
-  logout
+  logout,
+  forgotPassword,
+  resetPassword
 }
 
 export default authValidation

@@ -3,10 +3,12 @@ import { StatusCodes } from 'http-status-codes'
 import { env } from '~/config/environment'
 import User from '~/models/userModel'
 import {
+  ForgotPasswordPayloadType,
   LoginPayloadType,
   LogoutPayloadType,
   RefreshTokenPayloadType,
   RegisterPayloadType,
+  ResetPasswordPayloadType,
   VerifyEmailPayloadType
 } from '~/types/authType'
 import { IApiResponse } from '~/types/commonType'
@@ -139,7 +141,8 @@ const login = async (payload: LoginPayloadType): Promise<IApiResponse> => {
 
 const getProfile = async (uid: string): Promise<IApiResponse> => {
   try {
-    const excludeFields = '-password -verifyToken -verifyExpires -refreshToken'
+    const excludeFields =
+      '-password -verifyToken -verifyExpires -refreshToken -resetPasswordToken -resetPasswordExpires'
     const user = await User.findById(uid).select(excludeFields)
 
     if (!user) {
@@ -218,13 +221,85 @@ const logout = async (payload: LogoutPayloadType): Promise<IApiResponse> => {
   }
 }
 
+const forgotPassword = async (
+  payload: ForgotPasswordPayloadType
+): Promise<IApiResponse> => {
+  try {
+    const user = await User.findOne({ email: payload.email })
+
+    if (!user) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'User does not found!')
+    }
+
+    // Generate resetPasswordToken - resetPasswordExpires
+    const resetPasswordToken = crypto.randomBytes(16).toString('hex')
+    const resetPasswordExpires = Date.now() + 5 * 60 * 1000
+
+    user.resetPasswordToken = resetPasswordToken
+    user.resetPasswordExpires = resetPasswordExpires
+    await user.save()
+
+    // Send email
+    await sendMail({
+      email: user.email,
+      subject: 'Forgot Password?',
+      content: `
+          <div>
+            <p>CODE: <span>${resetPasswordToken}</span></p>
+            <p>Token will expire in 5 minutes</p>
+          </div>
+        `
+    })
+
+    return {
+      statusCode: StatusCodes.OK,
+      message: `Code sent to ${user.email}. Please check your email to reset password!`
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+const resetPassword = async (
+  payload: ResetPasswordPayloadType
+): Promise<IApiResponse> => {
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: payload.resetPasswordToken
+    })
+
+    if (!user) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid token!')
+    }
+
+    if (Number(user.resetPasswordExpires) < Date.now()) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Token expired!')
+    }
+
+    // Remove resetPasswordToken - resetPasswordExpires from database and change password
+    user.resetPasswordToken = undefined
+    user.resetPasswordExpires = undefined
+    user.password = payload.password
+    await user.save()
+
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Reset password successfully.'
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const authService = {
   register,
   verifyEmail,
   login,
   getProfile,
   refreshToken,
-  logout
+  logout,
+  forgotPassword,
+  resetPassword
 }
 
 export default authService
