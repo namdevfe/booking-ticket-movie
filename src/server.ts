@@ -1,3 +1,4 @@
+import cors from 'cors'
 import express from 'express'
 import { env } from '~/config/environment'
 import connectMongoDB from '~/config/mongodb'
@@ -6,6 +7,7 @@ import { APIs_V1 } from '~/routes/v1'
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 app.use('/api/v1', APIs_V1)
