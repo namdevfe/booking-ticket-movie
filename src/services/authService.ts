@@ -115,7 +115,7 @@ const login = async (payload: LoginPayloadType): Promise<IApiResponse> => {
     if (!existingUser.isVerifiedEmail) {
       throw new ApiError(
         StatusCodes.BAD_REQUEST,
-        'Your account has been actived!'
+        'Your account has not been actived!'
       )
     }
 
