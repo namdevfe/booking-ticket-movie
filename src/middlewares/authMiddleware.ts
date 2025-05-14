@@ -11,11 +11,13 @@ const authMiddleware =
   (rolesRequired?: Role[]) =>
   (req: AuthRequestType, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers.authorization?.split(' ')?.[1]
+      const bearerToken = req.headers.authorization
 
-      if (!token) {
+      if (!bearerToken) {
         throw new ApiError(StatusCodes.UNAUTHORIZED, 'Token is required!')
       }
+
+      const token = bearerToken?.split(' ')?.[1]
 
       jwt.verify(
         token,
@@ -23,9 +25,9 @@ const authMiddleware =
         async (error, decode) => {
           if (error) {
             if (error instanceof jwt.TokenExpiredError) {
-              throw new ApiError(StatusCodes.UNAUTHORIZED, 'Token expired!')
+              next(new ApiError(StatusCodes.UNAUTHORIZED, 'Token expired!'))
             } else {
-              throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid token!')
+              next(new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid token!'))
             }
           }
 
