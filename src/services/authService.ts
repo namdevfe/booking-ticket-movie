@@ -46,7 +46,7 @@ const register = async (payload: RegisterPayloadType): Promise<any> => {
         subject: 'Email verification',
         content: `<div>
           Please click to link bellow:
-          <a href='http://${env.APP_HOST}:${env.APP_PORT}/api/v1/auth/verify-email?verifyToken=${verifyToken}'>
+          <a href='${env.APP_CLIENT}/verify-email?token=${verifyToken}'>
             Verify Email
           </a>
         </div>`
