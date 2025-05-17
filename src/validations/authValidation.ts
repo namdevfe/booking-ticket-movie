@@ -8,6 +8,7 @@ import {
   refreshTokenSchema,
   registerSchema,
   resetPasswordSchema,
+  retryActiveSchema,
   verifyEmailSchema
 } from '~/schemas/authSchema'
 import ApiError from '~/utils/ApiError'
@@ -151,6 +152,25 @@ const resetPassword = async (req: Request, _: Response, next: NextFunction) => {
   }
 }
 
+const retryActive = async (req: Request, _: Response, next: NextFunction) => {
+  try {
+    await retryActiveSchema.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error) {
+    if (error instanceof Joi.ValidationError) {
+      next(
+        new ApiError(
+          StatusCodes.UNPROCESSABLE_ENTITY,
+          'Validation Error',
+          error?.details
+        )
+      )
+    }
+
+    next(error)
+  }
+}
+
 const authValidation = {
   register,
   verifyEmail,
@@ -158,7 +178,8 @@ const authValidation = {
   refreshToken,
   logout,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  retryActive
 }
 
 export default authValidation

@@ -30,3 +30,5 @@ export type ResetPasswordPayloadType = Pick<
   IUser,
   'resetPasswordToken' | 'password'
 >
+
+export type RetryActivePayloadType = Pick<IUser, 'email'>

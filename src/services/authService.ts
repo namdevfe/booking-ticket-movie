@@ -9,6 +9,7 @@ import {
   RefreshTokenPayloadType,
   RegisterPayloadType,
   ResetPasswordPayloadType,
+  RetryActivePayloadType,
   VerifyEmailPayloadType
 } from '~/types/authType'
 import { IApiResponse } from '~/types/commonType'
@@ -114,7 +115,7 @@ const login = async (payload: LoginPayloadType): Promise<IApiResponse> => {
     // Check email has been verify
     if (!existingUser.isVerifiedEmail) {
       throw new ApiError(
-        StatusCodes.BAD_REQUEST,
+        StatusCodes.FORBIDDEN,
         'Your account has not been actived!'
       )
     }
@@ -291,6 +292,46 @@ const resetPassword = async (
   }
 }
 
+const retryActive = async (
+  payload: RetryActivePayloadType
+): Promise<IApiResponse | any> => {
+  try {
+    const user = await User.findOne({ email: payload.email })
+
+    if (!user) throw new ApiError(StatusCodes.NOT_FOUND, 'User does not found!')
+
+    if (!user?.isVerifiedEmail) {
+      // Generate verifyToken - verifyExpires
+      const verifyToken = crypto.randomBytes(16).toString('hex')
+      const verifyExpires = Date.now() + 5 * 60 * 1000
+
+      user.verifyToken = verifyToken
+      user.verifyExpires = verifyExpires
+      await user.save()
+
+      // Send email request user verify email
+      const sentEmail = await sendMail({
+        email: user.email,
+        subject: 'Email verification',
+        content: `<div>
+          Please click to link bellow:
+          <a href='${env.APP_CLIENT}/verify-email?token=${verifyToken}'>
+            Verify Email
+          </a>
+        </div>`
+      })
+
+      if (sentEmail?.statusCode === StatusCodes.OK)
+        return {
+          statusCode: StatusCodes.OK,
+          message: 'Please check your email to verify account!'
+        }
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const authService = {
   register,
   verifyEmail,
@@ -299,7 +340,8 @@ const authService = {
   refreshToken,
   logout,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  retryActive
 }
 
 export default authService

@@ -94,6 +94,15 @@ const resetPassword = async (
   }
 }
 
+const retryActive = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await authService.retryActive(req.body)
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const authController = {
   register,
   verifyEmail,
@@ -102,7 +111,8 @@ const authController = {
   refreshToken,
   logout,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  retryActive
 }
 
 export default authController

@@ -30,5 +30,10 @@ Router.put(
   authValidation.resetPassword,
   authController.resetPassword
 )
+Router.post(
+  '/retry-active',
+  authValidation.retryActive,
+  authController.retryActive
+)
 
 export const authRoutes = Router
