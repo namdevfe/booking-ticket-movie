@@ -34,7 +34,7 @@ const authMiddleware =
           // Check role
           if (rolesRequired && rolesRequired.length > 0) {
             // Get role of user
-            const user = await User.findById((decode as any).uid)
+            const user = await User.findById((decode as any)?.uid)
 
             if (!user) {
               next(
