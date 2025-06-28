@@ -6,13 +6,16 @@ import ApiError from "~/utils/ApiError";
 import { slugify } from "~/utils/slugify";
 
 const createCinema = async (reqBody: CreateCinemaType): Promise<IApiResponse> => {
-  const { name } = reqBody
+  const { name, phoneNumber } = reqBody
 
   try {
-    const existingCinema = await Cinema.findOne({ name })
+    const existingCinema = await Cinema.findOne({ $or: [
+      { name},
+      { phoneNumber }
+    ] })
 
     if (existingCinema) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, 'This name cinema had already exist')
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'This name or phone number of cinema had already exist')
     }
 
     const createData = {
