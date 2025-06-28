@@ -9,7 +9,7 @@ import ApiError from '~/utils/ApiError'
 
 const authMiddleware =
   (rolesRequired?: Role[]) =>
-  (req: AuthRequestType, res: Response, next: NextFunction) => {
+  (req: AuthRequestType, _: Response, next: NextFunction) => {
     try {
       const bearerToken = req.headers.authorization
 

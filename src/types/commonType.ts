@@ -3,3 +3,8 @@ export interface IApiResponse<T = any> {
   message: string
   data?: T
 }
+
+export interface IValidationError {
+  field: string
+  message: string
+}
